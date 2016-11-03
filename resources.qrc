@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="dedalus">
+    <file>home.png</file>
     <file>delete.png</file>
     <file>directory.png</file>
     <file>logo.png</file>

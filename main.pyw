@@ -17,7 +17,7 @@ class AppMainWindow(QMainWindow):
 		self.ui=None
 		self.query=Query(self)
 		self.query.changed.connect(self.queryChanged)
-		self.baseUrl='http://localhost:8000';
+		self.baseUrl='http://localhost:8000'
 		
 	def setUi(self,ui):
 		self.ui=ui
@@ -37,12 +37,44 @@ class AppMainWindow(QMainWindow):
 
 		self.scene.tagClicked.connect(self.addTag)
 		
-		
 		self.resourceModel=ResourceTableModel(self,self.ui.resourceTable)
-		#self.ui.resourceTable.setModel(self.resourceModel)
 		
-		self.queryChanged()
+		completer = QCompleter([], self.ui.searchBox)
+		completer.setCompletionColumn(0)
+		completer.setMaxVisibleItems(20)
+		completer.setCompletionRole(Qt.EditRole)
+		completer.setCaseSensitivity(Qt.CaseInsensitive)
+		completer.setModelSorting(QCompleter.CaseInsensitivelySortedModel)
+		self.searchCompleter=completer
+		self.ui.searchBox.setCompleter(completer)
 		
+		self.ui.searchBox.textEdited.connect(self.searchTextChanged)
+		self.ui.searchBox.returnPressed.connect(self.addSearchBox)
+		self.ui.homeButton.clicked.connect(self.home)
+		
+		
+		self.home()
+
+	def searchTextChanged(self,s):
+		data=self.getSuggestions(s)
+		l=[]
+		for i in data:
+			l.append(i[0])
+		model=self.searchCompleter.model()
+		model.setStringList(l)
+
+	def getSuggestions(self,s):
+		return self.post('/suggestions/',{'prefix':s,'limit':20,'exclude':[]},0.2)
+
+	def addSearchBox(self):
+		tag=self.ui.searchBox.text()
+		QTimer.singleShot(200,self.ui.searchBox.clear)
+		self.addTag(tag)
+		
+	def home(self):
+		self.query.clear()
+		self.ui.searchBox.setFocus()
+
 	def queryItemClicked(self,idx):
 		if idx.column()==0:
 			self.query.removeTag(idx.row())
@@ -54,10 +86,19 @@ class AppMainWindow(QMainWindow):
 		data=self.query.query()
 		if data and 'tagCloud' in data:
 			self.scene.reinit(data['tagCloud'])
-		if data and 'resources' in data:
-			self.resourceModel.reset(data['resources'])
+		if len(self.query.tags):
+			count=0
+			if data and 'resources' in data:
+				self.resourceModel.reset(data['resources'])
+				count=len(data['resources'])
+			else:
+				count=0
+				self.resourceModel.reset([])
+			self.ui.resourceLabel.setText('Resources ('+str(count)+')')
 		else:
 			self.resourceModel.reset([])
+			self.ui.resourceLabel.setText('Resources')
+			
 		self.queryModel.reinit()
 
 	def deleteResource(self,res):
@@ -108,6 +149,11 @@ class Query(QObject):
 		
 	def getTag(self,idx):
 		return self.tags[idx]
+		
+	def clear(self):
+		self.tags=[]
+		self.changed.emit()
+		
 			
 class ResourceListItem(QListWidgetItem):
 	
@@ -166,7 +212,6 @@ class TagCloudScene(QGraphicsScene):
 				red=int(180-180*f)
 				green=int(110+145*f)
 				blue=int(255-255*f)
-			print(tag['name'],red,green,blue)
 			text.setDefaultTextColor(QColor(red,green,blue,255))
 			items.append(text)
 			rect=text.boundingRect()
