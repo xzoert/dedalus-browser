@@ -172,7 +172,6 @@ class TagCloudScene(QGraphicsScene):
 	def mousePressEvent(self,e):
 		i=self.itemAt(e.scenePos())
 		if i:
-			print('clicked',i.toPlainText())
 			self.tagClicked.emit(i.toPlainText())
 	
 	def reinit(self,tags):
