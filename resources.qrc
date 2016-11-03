@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="dedalus">
+    <file>delete.png</file>
+    <file>directory.png</file>
+    <file>logo.png</file>
+    <file>tagme.png</file>
+  </qresource>
+</RCC>
