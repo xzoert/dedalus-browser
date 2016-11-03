@@ -362,7 +362,8 @@ class ResourceTableModel:
 			if i%2:
 				style='background-color: #FFFFDD; '
 			else:
-				style=''
+				style='background-color: #FFFFFF; '
+			style=style+'padding-left: 5px; '
 			if not self.fileExists(res):
 				style=style+'color: #FF0000;'
 			label.setStyleSheet(style)
