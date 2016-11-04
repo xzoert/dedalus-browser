@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'navigator.ui'
 #
-# Created: Fri Nov  4 08:30:57 2016
+# Created: Fri Nov  4 19:43:38 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -69,14 +69,30 @@ class Ui_MainWindow(object):
         self.resourceTable.setRowCount(0)
         self.resourceTable.horizontalHeader().setVisible(False)
         self.resourceTable.verticalHeader().setVisible(False)
-        self.gridLayout.addWidget(self.resourceTable, 2, 0, 1, 1)
-        self.resourceLabel = QtGui.QLabel(self.widget_2)
+        self.gridLayout.addWidget(self.resourceTable, 1, 0, 1, 1)
+        self.widget_4 = QtGui.QWidget(self.widget_2)
+        self.widget_4.setObjectName("widget_4")
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.widget_4)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.resourceLabel = QtGui.QLabel(self.widget_4)
         font = QtGui.QFont()
         font.setWeight(75)
         font.setBold(True)
         self.resourceLabel.setFont(font)
         self.resourceLabel.setObjectName("resourceLabel")
-        self.gridLayout.addWidget(self.resourceLabel, 1, 0, 1, 1)
+        self.horizontalLayout_3.addWidget(self.resourceLabel)
+        self.refreshButton = QtGui.QPushButton(self.widget_4)
+        self.refreshButton.setMaximumSize(QtCore.QSize(40, 16777215))
+        self.refreshButton.setText("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/dedalus/refresh.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.refreshButton.setIcon(icon1)
+        self.refreshButton.setIconSize(QtCore.QSize(31, 20))
+        self.refreshButton.setObjectName("refreshButton")
+        self.horizontalLayout_3.addWidget(self.refreshButton)
+        self.gridLayout.addWidget(self.widget_4, 0, 0, 1, 1)
         self.horizontalLayout.addWidget(self.widget_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -94,6 +110,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Dedalus Browser", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search:", None, QtGui.QApplication.UnicodeUTF8))
         self.homeButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
-        self.resourceLabel.setText(QtGui.QApplication.translate("MainWindow", "Resurces", None, QtGui.QApplication.UnicodeUTF8))
+        self.resourceLabel.setText(QtGui.QApplication.translate("MainWindow", "Resources", None, QtGui.QApplication.UnicodeUTF8))
 
 import resources_rc

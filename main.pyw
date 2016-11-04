@@ -52,6 +52,8 @@ class AppMainWindow(QMainWindow):
 		self.ui.searchBox.returnPressed.connect(self.addSearchBox)
 		self.ui.homeButton.clicked.connect(self.home)
 		
+		self.ui.refreshButton.clicked.connect(self.queryChanged)
+		
 		
 		self.home()
 
@@ -103,8 +105,8 @@ class AppMainWindow(QMainWindow):
 
 	def deleteResource(self,res):
 		msgBox = QMessageBox()
-		msgBox.setText('<h1>Deleting resource</h1>')
-		msgBox.setInformativeText(self.tr('Are yu sure you want to delete')+' "'+res['label']+'"?')
+		msgBox.setText('<h1>Removing resource</h1>')
+		msgBox.setInformativeText(self.tr('Are yu sure you want to remove')+' "'+res['label']+'" from Dedalus?')
 		msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 		msgBox.setDefaultButton(QMessageBox.No)
 		msgBox.setIcon(QMessageBox.Warning)
@@ -296,10 +298,11 @@ class QueryTableModel(QAbstractTableModel):
 
 class ResourceTableModel:
 
-	COL_RESOURCE=2
-	COL_DIRECTORY=1
-	COL_TAGME=0
-	COL_DELETE=3
+	COL_RESOURCE=3
+	COL_DIRECTORY=0
+	COL_TAGME=1
+	COL_TYPE=2
+	COL_DELETE=4
 
 	NotExistsBrush=QBrush(QColor(255,0,0,255))
 	NormalBrush=QBrush(QColor(0,0,0,255))
@@ -360,11 +363,12 @@ class ResourceTableModel:
 			
 	def reinit(self):
 		self.view.clear()
-		self.view.setColumnCount(4)
+		self.view.setColumnCount(5)
 		self.view.setRowCount(len(self.resources))
 		self.view.setColumnWidth(self.COL_DIRECTORY,40)
 		self.view.setColumnWidth(self.COL_TAGME,40)
 		self.view.setColumnWidth(self.COL_DELETE,40)
+		self.view.setColumnWidth(self.COL_TYPE,24)
 		hh=self.view.horizontalHeader()
 		hh.setResizeMode(self.COL_RESOURCE,QHeaderView.Stretch)
 		hh.setResizeMode(self.COL_DIRECTORY,QHeaderView.Fixed)
@@ -391,6 +395,24 @@ class ResourceTableModel:
 			self.view.setCellWidget(i,self.COL_TAGME,TaggerButton(self,res))
 
 			self.view.setCellWidget(i,self.COL_DELETE,DeleteButton(self,res))
+			
+			if res['_url'][:7]=='file://':
+				fpath=urllib.parse.unquote(res['_url'][7:])
+				if os.path.isfile(fpath):
+					ico=QPixmap(":/dedalus/typefile.png")
+				elif os.path.isdir(fpath):
+					ico=QPixmap(":/dedalus/typedir.png")
+				else:
+					ico=None
+			else:
+				ico=QPixmap(":/dedalus/typeweb.png")
+			
+			if ico:
+				label=QLabel()
+				label.setPixmap(ico)
+				label.setAlignment(Qt.AlignCenter)
+				self.view.setCellWidget(i,self.COL_TYPE,label)
+					
 
 			i=i+1
 			
