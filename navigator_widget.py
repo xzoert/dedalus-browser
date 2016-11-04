@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'navigator.ui'
 #
-# Created: Thu Nov  3 17:01:12 2016
+# Created: Fri Nov  4 08:13:41 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Dedalus browser", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Dedalus Browser", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search:", None, QtGui.QApplication.UnicodeUTF8))
         self.homeButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.resourceLabel.setText(QtGui.QApplication.translate("MainWindow", "Resurces", None, QtGui.QApplication.UnicodeUTF8))
