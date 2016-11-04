@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'navigator.ui'
 #
-# Created: Fri Nov  4 08:16:21 2016
+# Created: Fri Nov  4 08:30:57 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
