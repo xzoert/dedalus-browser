@@ -87,7 +87,7 @@ class AppMainWindow(QMainWindow):
 	def queryChanged(self):
 		data=self.query.query()
 		if data and 'tagCloud' in data:
-			self.scene.reinit(data['tagCloud'])
+			self.scene.reinit(data['tagCloud'],len(data['resources']))
 		if len(self.query.tags):
 			count=0
 			if data and 'resources' in data:
@@ -148,7 +148,7 @@ class Query(QObject):
 		self.changed.emit()
 		
 	def query(self):
-		return self.app.post('/find/',{'limit':100,'tagCloud':True,'tagCloudLimit':50,'tags':self.tags,'orderBy':'label'},2.0)
+		return self.app.post('/find/',{'limit':1000,'tagCloud':True,'tagCloudLimit':50,'tags':self.tags,'orderBy':'label'},2.0)
 
 	def removeTag(self,tagIdx):
 		del self.tags[tagIdx]
@@ -184,14 +184,13 @@ class TagCloudScene(QGraphicsScene):
 		if i:
 			self.tagClicked.emit(i.toPlainText())
 	
-	def reinit(self,tags):
+	def reinit(self,tags,resCount):
 		
 		self.clear()
 		if not len(tags):
 			return
 		
 		tags.sort(key=lambda x: x['name'].lower())
-		
 		
 		minw=None
 		maxw=None
@@ -206,6 +205,8 @@ class TagCloudScene(QGraphicsScene):
 		maxwidth=0
 		items=[]
 		for tag in tags:
+			if tag['weight']>=resCount:
+				continue
 			text=QGraphicsTextItem()
 			text.setPlainText(tag['name'])
 			rw=(tag['weight']-minw)*1.0/(maxw-minw)
