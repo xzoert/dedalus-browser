@@ -23,7 +23,7 @@
      <widget class="QWidget" name="widget" native="true">
       <property name="maximumSize">
        <size>
-        <width>300</width>
+        <width>310</width>
         <height>16777215</height>
        </size>
       </property>
@@ -80,7 +80,7 @@
         <widget class="QGraphicsView" name="graphicsView">
          <property name="maximumSize">
           <size>
-           <width>300</width>
+           <width>310</width>
            <height>10000</height>
           </size>
          </property>
