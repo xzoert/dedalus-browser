@@ -214,14 +214,14 @@ class TagCloudScene(QGraphicsScene):
 			text.setFont(font)
 			if rw<0.5:
 				f=rw*2
-				red=int(180)
-				green=int(180-75*f)
-				blue=int(180+75*f)
+				red=int(140+40*f)
+				green=int(140+40*f)
+				blue=int(140-140*f)
 			else:
 				f=(rw-0.5)*2
 				red=int(180-180*f)
-				green=int(110+145*f)
-				blue=int(255-255*f)
+				green=int(180+20*f)
+				blue=int(0+0*f)
 			text.setDefaultTextColor(QColor(red,green,blue,255))
 			items.append(text)
 			rect=text.boundingRect()
