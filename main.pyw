@@ -113,6 +113,14 @@ class AppMainWindow(QMainWindow):
 			self.post('/remove/',{'url':res['_url']},2.0)
 			self.queryChanged()
 
+	def relocateResource(self,res,dir=None):
+		if dir is None or not os.path.exists(dir):
+			dir=QtCore.QDir.homePath()
+		(fileName,flt) = QFileDialog.getOpenFileName(self,self.tr("Relocate resource"), dir, "Any file (*)")
+		if fileName:
+			newUrl='file://'+urllib.parse.quote(fileName)
+			r=self.post('/rename/',{'url':res['_url'],'newUrl':newUrl,'renameDescendants':True})
+			self.queryChanged()
 
 	def post(self,addr,data,to=2.0):
 		body=json.dumps(data).encode('utf-8')
@@ -323,7 +331,13 @@ class ResourceTableModel:
 
 	def tableDoubleClicked(self,idx):
 		if idx.column()==self.COL_RESOURCE:
-			self.openResource(self.resources[idx.row()])
+			res=self.resources[idx.row()]
+			if self.fileExists(res):
+				self.openResource(res)
+			else:
+				self.app.relocateResource(res,self.getDirectory(res))
+
+		
 
 	def getDirectory(self,res):
 		if res['_url'][:7]=='file://':
