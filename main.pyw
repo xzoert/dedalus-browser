@@ -148,7 +148,7 @@ class Query(QObject):
 		self.changed.emit()
 		
 	def query(self):
-		return self.app.post('/find/',{'limit':1000,'tagCloud':True,'tagCloudLimit':50,'tags':self.tags,'orderBy':'label'},2.0)
+		return self.app.post('/find/',{'limit':1000,'tagCloud':True,'tagCloudLimit':40,'tags':self.tags,'orderBy':'label'},2.0)
 
 	def removeTag(self,tagIdx):
 		del self.tags[tagIdx]
