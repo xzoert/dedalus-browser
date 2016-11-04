@@ -114,7 +114,7 @@ class AppMainWindow(QMainWindow):
 			self.queryChanged()
 
 
-	def post(self,addr,data,to=0.5):
+	def post(self,addr,data,to=2.0):
 		body=json.dumps(data).encode('utf-8')
 		addr=self.baseUrl+addr
 		conn = urllib.request.urlopen(addr,body,timeout=to)
@@ -138,7 +138,7 @@ class Query(QObject):
 		self.changed.emit()
 		
 	def query(self):
-		return self.app.post('/find/',{'limit':100,'tagCloud':True,'tagCloudLimit':50,'tags':self.tags},2.0)
+		return self.app.post('/find/',{'limit':100,'tagCloud':True,'tagCloudLimit':50,'tags':self.tags,'orderBy':'label'},2.0)
 
 	def removeTag(self,tagIdx):
 		del self.tags[tagIdx]
@@ -180,7 +180,7 @@ class TagCloudScene(QGraphicsScene):
 		if not len(tags):
 			return
 		
-		tags.sort(key=lambda x: x['name'])
+		tags.sort(key=lambda x: x['name'].lower())
 		
 		
 		minw=None
