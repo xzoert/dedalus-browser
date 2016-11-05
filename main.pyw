@@ -344,10 +344,15 @@ class QueryTableModel(QAbstractTableModel):
 					
 		elif index.column()==self.COL_TAG:
 			if role==Qt.DisplayRole:
-				return tag.name
+				if tag.value==-1:
+					return '[NOT] '+tag.name
+				else:
+					return tag.name
+			'''
 			elif role==Qt.ForegroundRole:
 				if tag.value==-1:
 					return self.NotBrush
+			'''
 			
 	def reinit(self):
 		self.layoutAboutToBeChanged.emit()
