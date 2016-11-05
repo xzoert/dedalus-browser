@@ -27,7 +27,7 @@ class AppMainWindow(QMainWindow):
 		self.ui.graphicsView.setMouseTracking(True)
 		self.scene=TagCloudScene()
 		self.ui.graphicsView.setScene(self.scene)
-		self.ui.graphicsView.setCursor(Qt.PointingHandCursor)
+		#self.ui.graphicsView.setCursor(Qt.PointingHandCursor)
 		
 		self.queryModel=QueryTableModel(self)
 		self.ui.queryTable.setModel(self.queryModel)
@@ -111,7 +111,10 @@ class AppMainWindow(QMainWindow):
 	def deleteResource(self,res):
 		msgBox = QMessageBox()
 		msgBox.setText('<h1>Removing resource</h1>')
-		msgBox.setInformativeText(self.tr('Are yu sure you want to remove')+' "'+res['label']+'" from Dedalus?')
+		label=res['label']
+		if not label:
+			label=urllib.parse.unquote(res['_url'].split('/')[-1])
+		msgBox.setInformativeText('<pre><i>'+label+'</i></pre><p>Remove from Dedalus?</p>')
 		msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 		msgBox.setDefaultButton(QMessageBox.No)
 		msgBox.setIcon(QMessageBox.Warning)
@@ -202,14 +205,6 @@ class QueryTag:
 		self.value=value
 
 			
-class ResourceListItem(QListWidgetItem):
-	
-	def __init__(self,res):
-		self.res=res
-		QListWidgetItem.__init__(self,res['label'])
-		
-	def getResource(self):
-			return self.res
 
 
 class TagCloudScene(QGraphicsScene):
@@ -223,7 +218,8 @@ class TagCloudScene(QGraphicsScene):
 				v=-1
 			else:
 				v=1
-			self.tagClicked.emit(i.toPlainText(),v)
+			if not i._unclickable:
+				self.tagClicked.emit(i.toPlainText(),v)
 	
 	def reinit(self,tags,resCount):
 		
@@ -246,23 +242,30 @@ class TagCloudScene(QGraphicsScene):
 		maxwidth=0
 		items=[]
 		for tag in tags:
-			if tag['weight']>=resCount:
-				continue
 			text=QGraphicsTextItem()
 			text.setPlainText(tag['name'])
 			rw=(tag['weight']-minw)*1.0/(maxw-minw)
 			font=QFont('Sans',8.0+15.0*rw)
 			text.setFont(font)
-			if rw<0.5:
-				f=rw*2
-				red=int(140+40*f)
-				green=int(140+40*f)
-				blue=int(140-140*f)
+			if tag['weight']>=resCount:
+				text._unclickable=True
+				text.setCursor(Qt.ArrowCursor)
+				red=100
+				green=100
+				blue=100
 			else:
-				f=(rw-0.5)*2
-				red=int(180-180*f)
-				green=int(180+20*f)
-				blue=int(0+0*f)
+				text._unclickable=False
+				text.setCursor(Qt.PointingHandCursor)
+				if rw<0.5:
+					f=rw*2
+					red=int(140+40*f)
+					green=int(140+40*f)
+					blue=int(140-140*f)
+				else:
+					f=(rw-0.5)*2
+					red=int(180-180*f)
+					green=int(180+20*f)
+					blue=int(0+0*f)
 			text.setDefaultTextColor(QColor(red,green,blue,255))
 			items.append(text)
 			rect=text.boundingRect()
@@ -434,7 +437,11 @@ class ResourceTableModel:
 		hh.setResizeMode(self.COL_DELETE,QHeaderView.Fixed)
 		i=0
 		for res in self.resources:
-			label=QLabel(res['label'])
+			rlabel=res['label']
+			if not rlabel:
+				rlabel=urllib.parse.unquote(res['_url'].split('/')[-1])
+			
+			label=QLabel(rlabel)
 			if i%2:
 				style='background-color: #FFFFDD; '
 			else:
