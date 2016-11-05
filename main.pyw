@@ -123,10 +123,25 @@ class AppMainWindow(QMainWindow):
 	def relocateResource(self,res,dir=None):
 		if dir is None or not os.path.exists(dir):
 			dir=QtCore.QDir.homePath()
-		(fileName,flt) = QFileDialog.getOpenFileName(self,self.tr("Relocate resource"), dir, "Any file (*)")
+		autolabel=urllib.parse.unquote(res['_url'].split('/')[-1])
+		if res['label']==autolabel:
+			remakeLabel=True
+		else:
+			remakeLabel=False
+		if res['isdir']==1:
+			fileName = QFileDialog.getExistingDirectory(self,self.tr('Relocate resource'),dir)
+		else:
+			(fileName,flt) = QFileDialog.getOpenFileName(self,self.tr("Relocate resource"), dir, "Any file (*)")
 		if fileName:
 			newUrl='file://'+urllib.parse.quote(fileName)
 			r=self.post('/rename/',{'url':res['_url'],'newUrl':newUrl,'renameDescendants':True})
+			if remakeLabel:
+				newLabel=urllib.parse.unquote(r['_url'].split('/')[-1])
+				tags={}
+				for tag in r['_tags']:
+					tags[tag['name']]=tag['comment']
+				r=self.post('/update/',{'url':r['_url'],'tags':tags,'data':{'label':newLabel,'isdir':r['isdir']}})
+				
 			self.queryChanged()
 
 	def post(self,addr,data,to=2.0):
@@ -441,12 +456,17 @@ class ResourceTableModel:
 			
 			if res['_url'][:7]=='file://':
 				fpath=urllib.parse.unquote(res['_url'][7:])
-				if os.path.isfile(fpath):
+				if res['isdir']==1:
+					ico=QPixmap(":/dedalus/typedir.png")
+				elif res['isdir']==0:
+					ico=QPixmap(":/dedalus/typefile.png")
+				elif os.path.isfile(fpath):
 					ico=QPixmap(":/dedalus/typefile.png")
 				elif os.path.isdir(fpath):
 					ico=QPixmap(":/dedalus/typedir.png")
 				else:
 					ico=None
+						
 			else:
 				ico=QPixmap(":/dedalus/typeweb.png")
 			
