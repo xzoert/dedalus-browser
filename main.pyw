@@ -245,7 +245,7 @@ class TagCloudScene(QGraphicsScene):
 			text=QGraphicsTextItem()
 			text.setPlainText(tag['name'])
 			rw=(tag['weight']-minw)*1.0/(maxw-minw)
-			font=QFont('Sans',8.0+15.0*rw)
+			font=QFont('Sans',8.0+10.0*rw)
 			text.setFont(font)
 			if tag['weight']>=resCount:
 				text._unclickable=True
