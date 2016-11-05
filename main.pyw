@@ -218,8 +218,7 @@ class TagCloudScene(QGraphicsScene):
 				v=-1
 			else:
 				v=1
-			if not i._unclickable:
-				self.tagClicked.emit(i.toPlainText(),v)
+			self.tagClicked.emit(i.toPlainText(),v)
 	
 	def reinit(self,tags,resCount):
 		
@@ -247,15 +246,13 @@ class TagCloudScene(QGraphicsScene):
 			rw=(tag['weight']-minw)*1.0/(maxw-minw)
 			font=QFont('Sans',8.0+10.0*rw)
 			text.setFont(font)
+			text.setCursor(Qt.PointingHandCursor)
+			text.setToolTip(str(tag['weight']))
 			if tag['weight']>=resCount:
-				text._unclickable=True
-				text.setCursor(Qt.ArrowCursor)
 				red=100
 				green=100
 				blue=100
 			else:
-				text._unclickable=False
-				text.setCursor(Qt.PointingHandCursor)
 				if rw<0.5:
 					f=rw*2
 					red=int(140+40*f)
@@ -447,6 +444,7 @@ class ResourceTableModel:
 			else:
 				style='background-color: #FFFFFF; '
 			style=style+'padding-left: 5px; '
+			label.setToolTip(res['_url'])
 			if not self.fileExists(res):
 				style=style+'color: #FF0000;'
 			label.setStyleSheet(style)
