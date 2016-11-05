@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="dedalus">
+    <file>assigned.png</file>
+    <file>not-assigned.png</file>
     <file>typedir.png</file>
     <file>typefile.png</file>
     <file>typeweb.png</file>

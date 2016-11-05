@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'navigator.ui'
 #
-# Created: Fri Nov  4 20:29:33 2016
+# Created: Sat Nov  5 07:20:14 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,6 +48,7 @@ class Ui_MainWindow(object):
         self.queryTable.setMaximumSize(QtCore.QSize(16777215, 200))
         self.queryTable.setObjectName("queryTable")
         self.queryTable.horizontalHeader().setVisible(False)
+        self.queryTable.verticalHeader().setVisible(False)
         self.verticalLayout.addWidget(self.queryTable)
         self.graphicsView = QtGui.QGraphicsView(self.widget)
         self.graphicsView.setMaximumSize(QtCore.QSize(300, 10000))

@@ -32,8 +32,10 @@ class AppMainWindow(QMainWindow):
 		self.queryModel=QueryTableModel(self)
 		self.ui.queryTable.setModel(self.queryModel)
 		self.ui.queryTable.horizontalHeader().setStretchLastSection(True)
-		self.ui.queryTable.setColumnWidth(0,24)
+		self.ui.queryTable.setColumnWidth(QueryTableModel.COL_DELETE,18)
+		self.ui.queryTable.setColumnWidth(QueryTableModel.COL_TOGGLE,24)
 		self.ui.queryTable.clicked.connect(self.queryItemClicked)
+		self.ui.queryTable.setSelectionMode(QAbstractItemView.NoSelection);
 
 		self.scene.tagClicked.connect(self.addTag)
 		
@@ -78,11 +80,14 @@ class AppMainWindow(QMainWindow):
 		self.ui.searchBox.setFocus()
 
 	def queryItemClicked(self,idx):
-		if idx.column()==0:
+		if idx.column()==QueryTableModel.COL_DELETE:
 			self.query.removeTag(idx.row())
+		elif idx.column()==QueryTableModel.COL_TOGGLE:
+			self.query.toggleTag(idx.row())
+			
 
-	def addTag(self,tag):
-		self.query.addTag(tag)
+	def addTag(self,tag,v=1):
+		self.query.addTag(tag,v)
 		
 	def queryChanged(self):
 		data=self.query.query()
@@ -143,15 +148,26 @@ class Query(QObject):
 		self.app=app
 		self.tags=[]
 		
-	def addTag(self,name):
-		self.tags.append(name)
+	def addTag(self,name,value=1):
+		self.tags.append(QueryTag(name,value))
 		self.changed.emit()
 		
 	def query(self):
-		return self.app.post('/find/',{'limit':1000,'tagCloud':True,'tagCloudLimit':40,'tags':self.tags,'orderBy':'label'},2.0)
+		tags={}
+		for tag in self.tags:
+			tags[tag.name]=tag.value
+		if not len(tags):
+			limit=0
+		else:
+			limit=1000
+		return self.app.post('/find/',{'limit':limit,'tagCloud':True,'tagCloudLimit':40,'tags':tags,'orderBy':'label'},2.0)
 
 	def removeTag(self,tagIdx):
 		del self.tags[tagIdx]
+		self.changed.emit()
+		
+	def toggleTag(self,tagIdx):
+		self.tags[tagIdx].value=self.tags[tagIdx].value*-1
 		self.changed.emit()
 		
 	def getTags(self):
@@ -163,7 +179,13 @@ class Query(QObject):
 	def clear(self):
 		self.tags=[]
 		self.changed.emit()
-		
+
+class QueryTag:
+	
+	def __init__(self,name,value):
+		self.name=name
+		self.value=value
+
 			
 class ResourceListItem(QListWidgetItem):
 	
@@ -177,12 +199,16 @@ class ResourceListItem(QListWidgetItem):
 
 class TagCloudScene(QGraphicsScene):
 	
-	tagClicked=Signal(str)
+	tagClicked=Signal(str,int)
 	
 	def mousePressEvent(self,e):
 		i=self.itemAt(e.scenePos())
 		if i:
-			self.tagClicked.emit(i.toPlainText())
+			if e.modifiers()==Qt.CTRL:
+				v=-1
+			else:
+				v=1
+			self.tagClicked.emit(i.toPlainText(),v)
 	
 	def reinit(self,tags,resCount):
 		
@@ -271,6 +297,12 @@ class TagCloudScene(QGraphicsScene):
 	
 class QueryTableModel(QAbstractTableModel):
 	
+	COL_DELETE=0
+	COL_TOGGLE=1
+	COL_TAG=2
+	
+	NotBrush=QBrush(QColor(140,140,140,255))
+	
 	def __init__(self,app):
 		self.app=app
 		QAbstractTableModel.__init__(self)
@@ -279,22 +311,32 @@ class QueryTableModel(QAbstractTableModel):
 		return len(self.app.query.getTags())
 	
 	def columnCount(self,parent):
-		return 2
+		return 3
 	
 	def data(self, index, role):
 		if not index.isValid():
 			return 
-		if index.column()==0:
+		tag=self.app.query.getTag(index.row())
+		if index.column()==self.COL_DELETE:
+			if role==Qt.DecorationRole:
+				return QPixmap(":/dedalus/delete.png")
+		elif index.column()==self.COL_TOGGLE:
+			if role==Qt.DecorationRole:
+				if tag.value==1:
+					return QPixmap(":/dedalus/assigned.png")
+				else:
+					return QPixmap(":/dedalus/not-assigned.png")
+					
+		elif index.column()==self.COL_TAG:
 			if role==Qt.DisplayRole:
-				return 'x'
-		elif index.column()==1:
-			if role==Qt.DisplayRole:
-				return self.app.query.getTag(index.row())
+				return tag.name
+			elif role==Qt.ForegroundRole:
+				if tag.value==-1:
+					return self.NotBrush
 			
 	def reinit(self):
 		self.layoutAboutToBeChanged.emit()
 		self.layoutChanged.emit()
-
 
 
 class ResourceTableModel:
