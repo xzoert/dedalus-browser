@@ -3,7 +3,6 @@ Version=1.0
 Name=Dedalus Borowser
 Comment=Find your files and web pages by tag.
 Exec=/usr/bin/dedalus-browser
-Path=/home/xzoert/Documents/dedalus/navigator-qt
 Icon=/usr/share/icons/dedalus.svg
 Terminal=false
 Type=Application
