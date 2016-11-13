@@ -17,7 +17,7 @@ class AppMainWindow(QMainWindow):
 		self.ui=None
 		self.query=Query(self)
 		self.query.changed.connect(self.queryChanged)
-		self.baseUrl='http://localhost:8000'
+		self.baseUrl='http://localhost:4541'
 		
 	def setUi(self,ui):
 		self.ui=ui
